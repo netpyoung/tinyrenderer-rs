@@ -1,0 +1,10 @@
+[package]
+name = "prj"
+version = "0.1.0"
+authors = ["netpyoung <netpyoung@gmail.com>"]
+
+[dependencies]
+imagefmt = "4.0.0"
+rand = "0.3"
+
+# cpuprofiler = "0.0.3"
