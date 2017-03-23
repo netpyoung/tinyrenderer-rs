@@ -277,7 +277,7 @@ _Off Topic: if I have to implement some code to check whether a point belongs to
 There is another thing I like about this pseudocode: a neophyte in programming accepts it with enthusiasm, more experienced programmers often chuckle: “What an idiot wrote it?”. And an expert in computer graphics programming will shrug his shoulders and say: “Well, that’s how it works in real life”. Massively parallel computations in thousands of threads (i’m talking about regular consumer computers here) change the way of thinking.
 
 
-자, 시작해봅시다: 처음 우리가 알아야 할 것은 무게 중심 좌표계([barycentric coordinates](https://en.wikipedia.org/wiki/Barycentric_coordinate_system))입니다. 2D 삼각형 ABC와 점P가 주어지고, xy좌표계에 있습니다.
+자, 시작해봅시다: 처음 우리가 알아야 할 것은 무게 중심 좌표계([barycentric coordinates](https://en.wikipedia.org/wiki/Barycentric_coordinate_system))입니다. 2D 삼각형 ABC와 점P가 주어지고, 데카르트좌표계(xy)에 있습니다.
 저희 목표는 삼각형 ABC을 구성하는무게 중심 좌표계(barycentric coordinates)상의 점 P를 찾아내는 것입니다.
 다음과 같은 3개의 수 (1 − u − v,u,v)로 P를 나타낼 수 있습니다:
 
@@ -305,7 +305,7 @@ It is a simple vector equation, or a linear system of two equations with two var
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/02-triangle/index8x.png)
 
- 선형방정식을 학구적으로 풀기에는, 저는 좀 게으른것같습니다. 메트릭스를 이용할 겁니다:
+ 선형방정식을 학구적으로 풀기에는, 저는 좀 게으른것같습니다. 메트릭스를 이용해 봅시다:
 I am lazy and do not want to solve linear systems in a scholar way. Let us write it in matrix form:
 
 
@@ -404,6 +404,7 @@ I also added a clipping of the bounding box with the screen rectangle to spare t
 
 # Flat shading render
 
+저희는 이미 속이 비어있는 삼각형으로 모델링 하는 방법을 알고 있습니다. 이제 색을 칠해봅시다. 얼마나 삼각형을 잘 체울 수 있는지 확인하기에 좋을 것입니다. 여기 코드가 있습니다:
 We already know how to draw a model with empty triangles. Let us fill them with a random color. This will help us to see how well we have encoded filling of triangles. Here is the code:
 
 ```rust

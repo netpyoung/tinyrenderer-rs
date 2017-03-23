@@ -270,6 +270,9 @@ fn barycentric_i32(pts: [Vec2i; 3], P: Vec2i) -> Vec3f {
     if u.z.abs() < 1.0 {
         Vec3f::new(-1.0, 1.0, 1.0)
     } else {
+        // (1 - U - V, U, V)
+        // U == u.y / u.z
+        // V == u.x / u.z
         Vec3f::new(1.0 - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z)
     }
 }
@@ -280,12 +283,10 @@ fn barycentric(pts: [Vec3f; 3], P: Vec3f) -> Vec3f {
     let p1 = pts[1];
     let p2 = pts[2];
 
-    let u = Vec3f::new((p2.x - p0.x),
-                       (p1.x - p0.x),
-                       (p0.x - P.x))
-        .cross(Vec3f::new((p2.y - p0.y),
-                          (p1.y - p0.y),
-                          (p0.y - P.y)));
+    let u =
+        Vec3f::new((p2.x - p0.x), (p1.x - p0.x), (p0.x - P.x)).cross(Vec3f::new((p2.y - p0.y),
+                                                                                (p1.y - p0.y),
+                                                                                (p0.y - P.y)));
 
     if u.z.abs() < 1.0 {
         Vec3f::new(-1.0, 1.0, 1.0)
@@ -361,11 +362,11 @@ fn flat_shading_render() {
     let model = Model::new("obj/african_head.obj").unwrap();
 
     let light_dir = Vec3f::new(0.0, 0.0, -1.0);
-    for face in model.faces.iter() {
-        let mut screen_coords: [Vec2i; 3] = [Vec2i::new(0, 0), Vec2i::new(0, 0), Vec2i::new(0, 0)];
-        let mut world_coords: [Vec3f; 3] =
-            [Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0)];
+    let mut screen_coords: [Vec2i; 3] = [Vec2i::new(0, 0), Vec2i::new(0, 0), Vec2i::new(0, 0)];
+    let mut world_coords: [Vec3f; 3] =
+        [Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0)];
 
+    for face in model.faces.iter() {
         for j in 0..3 {
             let v = model.vert(face[j]);
             screen_coords[j as usize] = Vec2i::new(((v.x + 1.0) * width as f32 / 2.0) as i32,
@@ -396,7 +397,10 @@ fn rasterize(p0: &Vec2i,
     }
 
     for x in p0.x..p1.x {
+        // percent for x on p0 <= x <= p1
         let t = (x - p0.x) as f32 / (p1.x - p0.x) as f32;
+
+        // near-front from camera.
         let y = (p0.y as f32 * (1.0 - t) + p1.y as f32 * t) as i32;
 
         if ybuffer[x as usize] < y {
@@ -423,8 +427,8 @@ fn triangle(pts: [Vec3f; 3], zbuffer: &mut [f32], image: &mut Image, color: &Col
     }
 
     let mut P = Vec3f::new(0.0, 0.0, 0.0);
-    for x in bboxmin.x as i32 ..bboxmax.x as i32+ 1 {
-        for y in bboxmin.y as i32 ..bboxmax.y as i32 + 1 {
+    for x in bboxmin.x as i32..bboxmax.x as i32 + 1 {
+        for y in bboxmin.y as i32..bboxmax.y as i32 + 1 {
             P.x = x as f32;
             P.y = y as f32;
 
@@ -467,13 +471,12 @@ fn ch03() {
     let mut render = Image::new(WIDTH, HEIGHT);
     let model = Model::new("obj/african_head.obj").unwrap();
     for face in model.faces.iter() {
-        let mut pts = [Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0)];
+        let mut pts =
+            [Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0), Vec3f::new(0.0, 0.0, 0.0)];
         for i in 0..3 {
             let v = model.vert(face[i]);
             pts[i as usize] = world2screen(&v);
         }
-
-
 
         let mut screen_coords: [Vec2i; 3] = [Vec2i::new(0, 0), Vec2i::new(0, 0), Vec2i::new(0, 0)];
         let mut world_coords: [Vec3f; 3] =
@@ -489,7 +492,7 @@ fn ch03() {
         let n = (world_coords[2] - world_coords[0]).cross(world_coords[1] - world_coords[0]);
         let intensity = light_dir * n.normalized();
         if intensity > 0.0 {
-            let c = (intensity * 255.0) as u8;
+            let c = (intensity * intensity * 255.0) as u8;
             //triangle_old(screen_coords, &mut image, &Color::new(c, c, c));
             triangle(pts, &mut zbuffer, &mut render, &Color::new(c, c, c));
         }
@@ -506,7 +509,7 @@ fn ch03() {
 }
 
 fn ch03_2() {
-    //let (width, height) = (800, 16);
+    //const WIDTH: usize = 800;
     let height = 16;
 
     let mut render = Image::new(WIDTH, height);

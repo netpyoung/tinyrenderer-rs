@@ -11,5 +11,11 @@ ref: https://github.com/xymostech/rust-sdr
 하루에 반장씩 진행한것같다. rust도 배우면서 코드짜랴, 번역하랴, 내용 이해하랴. 처음 hook이 중요. '할 수 있다'라고 되내기며 하자.
 
 
+
+Bresenham’s line algorithm 선 그리기
+무게중심좌표게(barycentric coordinates) 삼각형 체우기
+Back-face culling 폴리곤 뒷면을 가릴것인가?
+z-buffer 클리핑에 이용
+
 # TODO
 [ ]: https://toolchain.gitbook.com/languages.html

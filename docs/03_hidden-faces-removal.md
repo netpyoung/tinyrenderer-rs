@@ -1,5 +1,6 @@
 # Introduction
-제 흑인 친구녀석 z-buffer를 소개합니다.
+제 흑인 친구녀석 z-buffer를 소개합니다.[TODO(kep)]
+
 Hello, let me introduce you my friend z-buffer of a black guy. He will help us get rid of the visual artifacts of the hidden faces removal we had during the last lesson.
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/03-zbuffer/3f057a75601d8ac34555e72ea03ef711.png)
@@ -11,7 +12,7 @@ By the way, i'd like to mention that this model i use heavily in the course is c
 
 
 다시 주제로 돌아와서, 이론적으로 버리는것 하나없이 모든 삼각형을 그릴 수 있습니다
-적절히 멀
+적절히 멀리있는 것부터 그리다보면 가까이에 있는 것을 그릴때 전에 그린게 지워질 것입니다.
 Well, back to the topic, in theory we could just draw all the triangles without discarding any. If we do it properly starting rear-to-front, the front facets will erase the back ones.
 
 이를 [painter's algorithm](http://en.wikipedia.org/wiki/Painter%27s_algorithm)라고 부릅니다.
@@ -20,7 +21,7 @@ Well, back to the topic, in theory we could just draw all the triangles without 
 각각의 카메라 이동에 대해 모든 씬에 대해 재정렬이 필요합니다.
  Unfortunately, it comes along with a high computational cost: for each camera movement we need to re-sort all the scene.
 
-동적 씬이 존재하며, 심지어 중요한 문제가 아닙니다. 중요한 문제는 정확한 순서를 결정할 수 없다는 것입니다.
+동적 씬이 존재하기도 하며... 하지만 이건 중요한 문제가 아닙니다. 중요한 문제는 정확한 순서를 알 수 없다는 것입니다.
  And then there are dynamic scenes... And this is not even the main problem. The main problem is it is not always possible to determine the correct order.
 
 
@@ -31,15 +32,14 @@ Imagine a simple scene made of three triangles: the camera looks up-to-down, we 
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/03-zbuffer/d493c52da4cabe9a057c26f696784956.png)
 
-다음과 같이 렌더링 될것입니다.
-:
+다음과 같이 렌더링 될것입니다:
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/03-zbuffer/023668cb8ea97f59bf87d982c1e8b030.png)
 
-파란면은 빨강면의 뒤에 있을까요 앞에있을까요? painter's algorithm 은 여기서 먹히지 않습니다.
+파란면은 빨강면의 뒤에 있을까요? 앞에있을까요? painter's algorithm 은 여기서 먹히지 않습니다.
 Blue facet - is it behind or in front of the red one? The painter's algorithm does not work here.
 
-파란면을 2개로 나누어서야 가능합니다(하나는 빨강면의 앞에, 다른 하나는 뒤에).
+파란면을 2개로 나누고 나서야 가능합니다(하나는 빨강면의 앞에, 다른 하나는 뒤에).
  It is possible to split blue facet in two (one in front of the red facet and one behind).
 
 빨강면 앞에 있는 것을 2개로 나눕니다 - 녹색 삼각형 앞에 있는 것과 뒤에 있는것..
@@ -49,7 +49,7 @@ Blue facet - is it behind or in front of the red one? The painter's algorithm do
 문제가 있습니다: 씬안에 수백만의 삼각형이 있으면 계산하는데 매우 부하가 클것입니다.
 I think you get the problem: in scenes with millions of triangles it is really expensive to compute.
 
-이러한 부하를 없에기 위해 [BSP trees](https://en.wikipedia.org/wiki/Binary_space_partitioning)를 사용할 수 있습니다.
+이러한 부하는 [BSP trees](https://en.wikipedia.org/wiki/Binary_space_partitioning)로 줄일 수 있습니다.
  It is possible to use [BSP trees](https://en.wikipedia.org/wiki/Binary_space_partitioning) to get it done.
 어쨋거나, 이러한 데이터 구조는 움직이는 카메라에 대해 고정적이나, 매우 지저분합니다.
 By the way, this data structure is constant for moving camera, but it is really messy.
@@ -66,7 +66,7 @@ Let us lose a dimension for a while and to cut the above scene along the yellow 
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/03-zbuffer/d673f40bcadbe53f4b3cb29bbbcfb461.png)
 
-제가 의도한대로, 저희 씬은 이제 3개의 선으로 이루어졌으며, 최종 렌더러는 노말 넓이를 1 pixel 높이 가지고 있습니다
+제가 의도한대로, 저희 씬은 이제 3개의 선으로 이루어졌으며, 최종적으로 렌더링 화면 넓이는 그대로지만, 높이는 1픽셀로 되었습니다:
 
 I mean, now our scene is made of three line segments (intersection of the yellow plane and each of the triangles),
 and the final render has a normal width but 1 pixel height:
@@ -76,6 +76,7 @@ and the final render has a normal width but 1 pixel height:
 
 
 As always, there is a [commit](https://github.com/ssloy/tinyrenderer/tree/d9c4b14c0d8c385937bc87cee1178f1e42966b7c) available.
+
 
 저희 씬은 2차원이므로, line() 함수를 이용하여 쉽게 그릴 수 있습니다.
 Our scene is two-dimensional, so it is easy to draw it using the line() function we programmed in the very first lesson.
