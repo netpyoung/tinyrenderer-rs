@@ -567,8 +567,17 @@ fn ch03_1() {
     image.write("out.tga").unwrap();
 }
 
+
+fn ch04() {
+    let (width, height) = (100, 100);
+    let mut image = Image::new(width, height);
+
+    let VP = matrix::viewport(width / 4, height / 4, width / 2, height / 2);
+    image.write("out.tga").unwrap();
+}
+
 fn main() {
-    ch03();
+    ch04();
     /*
     let (width, height) = (200, 200);
 

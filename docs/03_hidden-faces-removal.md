@@ -167,6 +167,14 @@ fn rasterize(p0: &Vec2i, p1: &Vec2i, image: &mut Image, color: &Color, ybuffer: 
 }
 ```
 
+
+```
+// 역주. 흰선이 아레서부터 위로 올라가면서 마주치는 부분을 색칠 및 ybuffer를 동시에 채워나가고 있다고 상상!!
+// ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/03-zbuffer/20e9d8742d17979ec70e45cafacd63a5.png)
+```
+
+
+
 매우 매우 간단합니다: p0.x와 p1.x사이의 x좌표를 돌면서 그에 대응하는 y좌표를 계산하였습니다.
 It is really-really simple: i iterate through all x-coordinates between p0.x and p1.x and compute the corresponding y-coordinate of the segment.
 
