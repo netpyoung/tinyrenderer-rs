@@ -109,8 +109,7 @@ x-축으로 기울었습니다. 대각 반대쪽의 요소는 y-축으로 기울
 지금 말한건 누굽니까? 과정을 다시 살펴봅시다:
 * 2D를 평면 z = 1인 3D에 내장시켰습니다.
 * 3D상에서 원하는 것을 처리합니다.
-* 3D를 2D로 투영시키고자 TODO
-* For every point we want to project from 3D into 2D we draw a straight line between the origin and the point to project and then we find its intersection with the plane z=1.
+* 3D상에 있는 모든 점들을 2D로 투영시키긴 위해서, 원점과 투영시킬 점을 직선으로 이어 z = 1인 평면과 교차한 것을 찾습니다.
 
 점 (x, y, z)가, 마젠타색상의 2D 평면 위의 (x / z, y / z)로 투영되었습니다:
 
@@ -128,22 +127,17 @@ x-축으로 기울었습니다. 대각 반대쪽의 요소는 y-축으로 기울
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/04-perspective-projection/9e9658d91a6c8198606a8603012f048a.png)
 
-z = 0에 가까워 질 수록, 투영 결과는 원점 (x, y)보다 멀리 떨어지게 될 것입니다.
-If we continue the process, approaching to z=0, then the projection goes farther from the origin in the direction (x,y).
+계속 진행하면 진행할 수록, z = 0에 가까워지며, 투영 결과는 원점에서 (x, y)방향으로 보다 멀리 떨어지게 될 것입니다.
 
 다시말해, 점(x, y, 0)는 (x, y) 방향으로 무한대로 투영된다는 것입니다.
- In other words, point (x,y,0) is projected onto an infinitely far point in the direction (x,y).
 
 이것은 무얼 의미하는 걸까요? 그렇습니다. 바로 벡터입니다!
- What is it? Right, it is simply a vector!
 
 이러한 동차좌표(Homogeneous coordinates)는 벡터와 점을 구분 할 수 있도록 해 줍니다.
 
- allow to distinguish between a vector and a point.
-
 vec2(x, y)는 벡터일까요 포인터일까요? 바로 말하기 어렵습니다. z = 0인 동차좌표라면 벡터일 것이고, 아니면 점일것입니다.
- If a programmer writes vec2(x,y), is it a vector or a point? Hard to say. In homogeneous coordinates all things with z=0 are vectors, all the rest are points.
  vector + vector = vector. Vector - vector = vector. Point + vector = point.
+
 
 
 ## 조합 변형(A composite transformation)
@@ -172,20 +166,13 @@ vec2(x, y)는 벡터일까요 포인터일까요? 바로 말하기 어렵습니�
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/04-perspective-projection/ff8f6a2130986fed747e55a26e054c6f.png)
 
 
-이건 또 다른 종류의 마법입니다(백마법). y-버퍼를 기억하시나요?
-And here another kind of magic (white!) happens. Do you remember our y-buffer exercise?
+이건 또 다른 종류의 (백)마법입니. y-버퍼를 기억하시나요?
 
-여기서도 동일한 일을 하였습니다: 2D 오브젝트를 x = 0인 수직선에 투영시켰습니다.
- Here we will do the same: we project our 2D object onto the vertical line x=0.
+여기에서도 똑같이 하였습니다: 2D 오브젝트를 x = 0인 수직선에 투영시켰습니다.
 
-좀 더 어려운 문제로 가봅시다:
-중심투영법(central projection)을 활용해 보기 위해,
-중점을 바라보고 있는 카메라가 점 (5, 0)에 위치해 있다고 가정해 봅시다.
-
- Let us harden the rules a bit: we have to use a central projection, our camera is in the point (5,0) and is pointed onto the origin.
+좀 더 어려운 문제로 가봅시다: 중심투영법(central projection)을 적용하기 위해, 중점을 바라보고 있는 카메라가 점 (5, 0)에 위치해 있다고 가정해 봅시다.
 
 투영된 것을 얻기 위해선 카메라와 투영된 점들을 선으로 이어(노란선), 화면과 교차된 것(하얀색 세로선)을 찾아야 합니다.
- To find the projection we need to trace straight lines between the camera and the points to be projected (yellow) and to find the intersection with the screen line (white vertical).
 
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/04-perspective-projection/a7081e13ad5016aa33f87edb50b218f0.png)
 
@@ -195,10 +182,8 @@ And here another kind of magic (white!) happens. Do you remember our y-buffer ex
 ![](https://raw.githubusercontent.com/ssloy/tinyrenderer/gh-pages/img/04-perspective-projection/2b9f233797ca0a8b2d9d9f9750c29a36.png)
 
 **표준 정사영(standard orthogonal projection)**을 활용하여 빨간 오브젝트를 화면에 투영한다면, 동일한 점들을 얻을 수 있을 것입니다!
-If we project the red object onto the screen using **표준 정사영(standard orthogonal projection)**, then we find exactly the same points!
 
 이제 변형이 어떻게 동작하는지 자세히 살펴봅시다: 수직선들은 카메라와 가까이 있는 것들은 늘어나게되며, 멀리있는 것들은 줄어들게 됩니다.
- Let us look closely how the transformation works: all  vertical segments are transformed into vertical segments, but those close to the camera are stretched and those far from the camera are shrunk.
 
 변형매트릭스에서 계수가 -1/5지만, 적절한 계수를 고른다면 정사형된 이미지를 얻을 수 있을 것입니다!
 
